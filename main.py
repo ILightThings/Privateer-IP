@@ -29,7 +29,7 @@ dnsservers1 = {"Canada, Qubec, Montreal":"184.149.50.25",
               "General, Quad 9":"9.9.9.9",
               }
 thelookup = dns.resolver.Resolver()
-site = "***REMOVED***"
+site = "google.com"
 ip_regex = re.compile("[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
 
 
@@ -65,9 +65,13 @@ def whoisIPLookup(ipList):
 
 def requestByIP(ipList):
     print("\r\n### REQUEST PAGE BY IP  (Determines if there is virtual hosting)")
-    q = requests.get("http://"+site)
-    qs = BeautifulSoup(q.text,features="html.parser")
-    print(f"[x] http://{site:<30}   {'Page Title: ' + qs.find('title').string}")
+    try:
+        q = requests.get("http://"+site,timeout=(2,5))
+        qs = BeautifulSoup(q.text,features="html.parser")
+        print(f"[x] http://{site:<30}   {'Page Title: ' + qs.find('title').string}")
+    except requests.exceptions.Timeout:
+        print(f"[x] http://{site:<30}   REQUEST TIMED OUT")
+    
     for ip in ipList:
         r = requests.get("http://"+ip)
         rs = BeautifulSoup(r.text,features="html.parser")
